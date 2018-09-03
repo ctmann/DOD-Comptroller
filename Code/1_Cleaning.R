@@ -58,8 +58,10 @@ cleaning.function <- function(my.url, my.xpath){
            str_detect(link.title, "R-1") ~ "R-1",
            str_detect(link.title, "C-1") ~ "C-1",
            str_detect(link.title, "RF-1") ~ "RF-1",
-           str_detect(link.title, "Overseas|Deterrence") ~ "OCO.Related"),
-          display.version = if_else(str_detect(hyperlink, "display"), "display.version", "not.display.version"),
+           str_detect(link.title, "Overseas|Deterrence") ~ "OCO.Related",
+           str_detect(link.title, "Emergency|Disaster") ~ "Emergency.Related"),
+          sorting.id = row_number(),
+           display.version = if_else(str_detect(hyperlink, "display"), "display.version", "not.display.version"),
           hyperlink = ifelse(grepl(pattern = "/Portals/", hyperlink),  paste0("https://comptroller.defense.gov",hyperlink),hyperlink)
           )
   return(df)
@@ -74,17 +76,10 @@ refs <-  refs %>%
 # Export ------------------------------------------------------------------
 
 #' Export for convenience to 'Intermediary' folder
-write_feather(refs, "./Data/Intermediary/refs.feather")
+ write_feather(refs, "./Data/Intermediary/refs.feather")
 
-
-
-
-
-
-
-
-
-
+#' Export for web to 'Processed" folder
+write_csv(refs, "./Data/Processed/refs.csv")
 
 
 
