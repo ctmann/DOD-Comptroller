@@ -18,8 +18,8 @@ xpath.id <- c("92093", "87158", '77972', '65033', '59922', '58341',  '58365', '5
               "58395",  '58396'  )
 
 refs <- tibble(FY = timespan,
-               hyperlink = str_c("https://comptroller.defense.gov/Budget-Materials/Budget/", timespan, "/"),
-               xpath =  str_c('LiveHTMLWrapper', xpath.id, ' div')) 
+               hyperlink = str_c("https://comptroller.defense.gov/Budget-Materials/Budget", timespan, "/"),
+               xpath =  str_c('#LiveHTMLWrapper', xpath.id, ' div')) 
 
 
 cleaning.function <- function(my.url, my.x.path){
@@ -56,13 +56,70 @@ cleaning.function <- function(my.url, my.x.path){
            str_detect(link.title, "C-1") ~ "C-1",
            str_detect(link.title, "RF-1") ~ "RF-1",
            str_detect(link.title, "Overseas|Deterrence") ~ "OCO.Related"),
-          display.version = if_else(str_detect(hyperlink, "display"), "display.version", "not.display.version")
+          display.version = if_else(str_detect(hyperlink, "display"), "display.version", "not.display.version"),
+          hyperlink = ifelse(grepl(pattern = "/Portals/", hyperlink),  paste0("https://comptroller.defense.gov",hyperlink),hyperlink)
           )
 
   return(df)
 }
 
+
+
 cleaning.function(my.url,  my.xpath) %>% View()
+
+map2(refs$hyperlink[1], refs$xpath[1], cleaning.function)
+
+map2_dfr(my.url, my.xpath, cleaning.function)
+
+map2_dfr(refs$hyperlink[2], refs$xpath[2], cleaning.function)
+
+identical(refs$xpath[2], my.xpath)
+identical(refs$hyperlink[2], my.url)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
