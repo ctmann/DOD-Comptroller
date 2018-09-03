@@ -2,8 +2,9 @@
 # Library -----------------------------------------------------------------
 library(tidyverse)
 library(rvest)
+library(feather)
 
-# Code --------------------------------------------------------------------
+# Refs --------------------------------------------------------------------
 my.url <- "https://comptroller.defense.gov/Budget-Materials/Budget2018/"
 my.xpath <- '//*[@id="dnn_ctr92093_ContentPane"]'
 my.xpath <- '#LiveHTMLWrapper87158 div'
@@ -22,7 +23,9 @@ refs <- tibble(FY = timespan,
                xpath =  str_c('#LiveHTMLWrapper', xpath.id, ' div')) 
 
 
-cleaning.function <- function(my.url, my.x.path){
+# Cleaning Function -------------------------------------------------------
+
+cleaning.function <- function(my.url, my.xpath){
   x <- read_html(my.url) %>% 
           html_node(my.xpath) %>% 
           html_nodes("a") %>% 
@@ -59,48 +62,20 @@ cleaning.function <- function(my.url, my.x.path){
           display.version = if_else(str_detect(hyperlink, "display"), "display.version", "not.display.version"),
           hyperlink = ifelse(grepl(pattern = "/Portals/", hyperlink),  paste0("https://comptroller.defense.gov",hyperlink),hyperlink)
           )
-
   return(df)
-}
+    }
 
-cleaning.function <- safely(cleaning.function)
+# Apply Function ----------------------------------------------------------
 
+refs <-  refs %>%  
+  mutate(page.data = map2(hyperlink, xpath, cleaning.function)) %>% 
+  unnest()
 
-cleaning.function(my.url,  my.xpath)
+# Export ------------------------------------------------------------------
 
+#' Export for convenience to 'Intermediary' folder
+write_feather(refs, "./Data/Intermediary/refs.feather")
 
-  map2_dfr(refs$hyperlink[1], refs$xpath[1], cleaning.function)
-
-refs %>% map2_dfr(hyperlink[2], xpath[2], ~cleaning.function)
-
-
-my.df <- refs %>% 
-  mutate(page.data = map2(.$hyperlink, .$xpath, cleaning.function))
-
-my.df %>% unnest() %>% View()
-
-View(refs)
-
-
-
-
-
-my.url <- "https://comptroller.defense.gov/Budget-Materials/Budget2019/"
-my.xpath <- "#LiveHTMLWrapper92093 div"
-
-
-
-cleaning.function(my.url, my.xpath)
-
-identical(abrev.refs$hyperlink, my.url)
-identical(abrev.refs$xpath, my.xpath)
-
-abrev.refs <- refs[1:2,]
-
-my.df <- abrev.refs %>% 
-  mutate(page.data = map2(hyperlink, xpath, cleaning.function) )
-
-cleaning.function(abrev.refs$hyperlink, abrev.refs$xpath)
 
 
 
