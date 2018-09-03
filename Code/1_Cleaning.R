@@ -63,36 +63,44 @@ cleaning.function <- function(my.url, my.x.path){
   return(df)
 }
 
+cleaning.function <- safely(cleaning.function)
 
 
-cleaning.function(my.url,  my.xpath) %>% View()
-
-map2(refs$hyperlink[1], refs$xpath[1], cleaning.function)
-
-map2_dfr(my.url, my.xpath, cleaning.function)
-
-map2_dfr(refs$hyperlink[2], refs$xpath[2], cleaning.function)
-
-identical(refs$xpath[2], my.xpath)
-identical(refs$hyperlink[2], my.url)
+cleaning.function(my.url,  my.xpath)
 
 
+  map2_dfr(refs$hyperlink[1], refs$xpath[1], cleaning.function)
+
+refs %>% map2_dfr(hyperlink[2], xpath[2], ~cleaning.function)
 
 
+my.df <- refs %>% 
+  mutate(page.data = map2(.$hyperlink, .$xpath, cleaning.function))
 
+my.df %>% unnest() %>% View()
 
-
-
+View(refs)
 
 
 
 
 
+my.url <- "https://comptroller.defense.gov/Budget-Materials/Budget2019/"
+my.xpath <- "#LiveHTMLWrapper92093 div"
 
 
 
+cleaning.function(my.url, my.xpath)
 
+identical(abrev.refs$hyperlink, my.url)
+identical(abrev.refs$xpath, my.xpath)
 
+abrev.refs <- refs[1:2,]
+
+my.df <- abrev.refs %>% 
+  mutate(page.data = map2(hyperlink, xpath, cleaning.function) )
+
+cleaning.function(abrev.refs$hyperlink, abrev.refs$xpath)
 
 
 
