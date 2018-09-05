@@ -6,7 +6,7 @@ Following the February release, it is not uncommon for the Administration to req
 
 The release of new data on a rolling basis makes the Comptroller's website difficult to predict (from a webscraping point-of-view). Each FY is idiosyncratically arrayed with novel or updated data, and new sections are described colloquially rather than with a consistent naming convention (for example, "Amendment", "Supplemental", "Disaster", etc).
 
-Occassionally, the Comptroller has not corrected or appended vital budget documents to account for congressional actions. For example, in the current year (FY2019), most Comptroller budget documents contain errors in the appropriated amounts shown for FY2018. (DOD published its set of budget documents before FY2018 appropriations legislation was passed, and has chosen not to correct its estimates.)
+Occasionally, the Comptroller has not corrected or appended vital budget documents to account for congressional actions. For example, in the current year (FY2019), most Comptroller budget documents contain errors in the appropriated amounts shown for FY2018. (DOD published its set of budget documents before FY2018 appropriations legislation was passed, and has chosen not to correct its estimates.)
 
 ## Data Format
 * Timespan: FY2000-current
