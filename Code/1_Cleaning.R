@@ -71,12 +71,13 @@ cleaning.function <- function(my.url, my.xpath){
 
 refs <-  refs %>%  
   mutate(page.data = map2(hyperlink, xpath, cleaning.function)) %>% 
-  unnest()
+  unnest() %>% 
+  rename(main.hyperlink = hyperlink, file.hyperlink = hyperlink1)
 
 # Export ------------------------------------------------------------------
 
 #' Export for convenience to 'Intermediary' folder
- write_feather(refs, "./Data/Intermediary/refs.feather")
+ write_feather(refs, "./Data/Processed/refs.feather")
 
 #' Export for web to 'Processed" folder
 write_csv(refs, "./Data/Processed/refs.csv")
