@@ -51,7 +51,7 @@ cleaning.function <- function(my.url, my.xpath){
   filter(!is.na(hyperlink) & !(str_detect(document.type, "Links to Budget Materials"))) %>%
   distinct(hyperlink, .keep_all = T) %>%
   mutate( appropriation = case_when(
-           str_detect(link.title, "O-1") ~ "O-1",
+           str_detect(link.title, "O-1|0-1") ~ "O-1",
            str_detect(link.title, "M-1") ~ "M-1",
            str_detect(link.title, "P-1\\)") ~ "P-1",
            str_detect(link.title, "P-1R") ~ "P-1R",
@@ -72,7 +72,14 @@ cleaning.function <- function(my.url, my.xpath){
 refs <-  refs %>%  
   mutate(page.data = map2(hyperlink, xpath, cleaning.function)) %>% 
   unnest() %>% 
-  rename(main.hyperlink = hyperlink, file.hyperlink = hyperlink1)
+  rename(main.hyperlink = hyperlink, file.hyperlink = hyperlink1) %>% 
+  group_by(FY) %>% 
+  mutate(sorting.id = row_number()) %>% 
+  mutate(amended.request.or.not = 
+           if_else(any(str_detect(document.type, "Amend|Additional"))|
+                   any(str_detect(link.title,    "Amend|Additional")), "docs.were.amended.this.FY", "docs.were.not.amended.this.FY")) %>% 
+  ungroup()
+
 
 # Export ------------------------------------------------------------------
 
@@ -80,7 +87,7 @@ refs <-  refs %>%
  write_feather(refs, "./Data/Processed/refs.feather")
 
 #' Export for web to 'Processed" folder
-write_csv(refs, "./Data/Processed/refs.csv")
+ write_csv(refs, "./Data/Processed/refs.csv")
 
 
 
